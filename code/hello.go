@@ -6,23 +6,6 @@ import (
 	"reflect"
 )
 
-// var ctx = context.Background()
-
-// // function to connect to GCP
-// func connectToGCP() {
-// 	client, err := storage.NewClient(ctx)
-// 	if err != nil {
-
-// 	}
-// 	return client
-// }
-
-// func getBucket() {
-// 	// connect to GCP
-// 	client = connectToGCP()
-// 	bucket := client.Bucket("my-bucket")
-// }
-
 func FunctionA() {
 	fmt.Println("FunctionA called")
 }
