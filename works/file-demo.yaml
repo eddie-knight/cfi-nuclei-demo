@@ -1,0 +1,15 @@
+id: this-is-unique-i-promise
+info:
+  name: arbitrary
+  severity: info
+  author: arbitrary
+
+file:
+  - extensions:
+      - txt
+
+    extractors:
+      - type: regex
+        regex: 
+          - "Hello world!"
+# digest: 4a0a00473045022100f924cc109e7612dfdbb86d0dfb2503ab345332583e98778710b97e9e19096f8f02204104bbc25ca31b08f5d444bf51214d98a26d22c1e701f7e50b72c62da41b4fb8:aaf38f31a171ac3523192a918c72ba84

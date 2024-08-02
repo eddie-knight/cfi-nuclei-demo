@@ -1,0 +1,15 @@
+id: this-is-unique-i-promise
+info:
+  name: arbitrary
+  severity: info
+  author: arbitrary
+
+http:
+  - method: GET
+    path: 
+      - "https://{{BaseURL}}"
+    matchers:
+      - type: status
+        status:
+          - 301
+
