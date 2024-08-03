@@ -173,7 +173,7 @@ func generateControlID(controlID string) string {
 
 func createCodeSection(controlID, testID string) Code {
 	// the compiled executable will eventually live at this path
-	binSrc := filepath.Join(OUTPUT_DIR, "test-exec_"+VERSION)
+	binSrc := filepath.Join("..", "src", "test-exec_"+VERSION)
 
 	return Code{
 		Engine: []string{"zsh"}, // This might need to change depending on what the runners are using

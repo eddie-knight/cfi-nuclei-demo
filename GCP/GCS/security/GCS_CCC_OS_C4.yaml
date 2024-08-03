@@ -7,7 +7,7 @@ info:
 code:
   - engine:
       - zsh
-    source: GCP/GCS/test-exec_0.0.0 GCS_CCC_OS_C4_TR03
+    source: ../src/test-exec_0.0.0 GCS_CCC_OS_C4_TR03
     matchers:
       - type: word
         words:
@@ -15,7 +15,7 @@ code:
           - ERROR
   - engine:
       - zsh
-    source: GCP/GCS/test-exec_0.0.0 GCS_CCC_OS_C4_TR01
+    source: ../src/test-exec_0.0.0 GCS_CCC_OS_C4_TR01
     matchers:
       - type: word
         words:
@@ -23,7 +23,7 @@ code:
           - ERROR
   - engine:
       - zsh
-    source: GCP/GCS/test-exec_0.0.0 GCS_CCC_OS_C4_TR02
+    source: ../src/test-exec_0.0.0 GCS_CCC_OS_C4_TR02
     matchers:
       - type: word
         words:
