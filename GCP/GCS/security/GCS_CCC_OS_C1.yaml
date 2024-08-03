@@ -1,0 +1,30 @@
+id: GCS_CCC_OS_C1
+info:
+  name: 'GCS CCC Object Storage: Prevent unencrypted requests to object storage bucket'
+  severity: info
+  author: FINOS
+code:
+  - engine:
+      - zsh
+    source: GCP/GCS/test-exec_0.0.0 GCS_CCC_OS_C1_TR01
+    matchers:
+      - type: word
+        words:
+          - FAIL
+          - ERROR
+  - engine:
+      - zsh
+    source: GCP/GCS/test-exec_0.0.0 GCS_CCC_OS_C1_TR02
+    matchers:
+      - type: word
+        words:
+          - FAIL
+          - ERROR
+  - engine:
+      - zsh
+    source: GCP/GCS/test-exec_0.0.0 GCS_CCC_OS_C1_TR03
+    matchers:
+      - type: word
+        words:
+          - FAIL
+          - ERROR

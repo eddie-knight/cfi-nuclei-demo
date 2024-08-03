@@ -1,0 +1,7 @@
+code: true
+templates:
+  - ccc-os-c1.yaml
+  - ccc-os-c2.yaml
+  - ccc-os-c3.yaml
+var:
+  - region=us-east-1

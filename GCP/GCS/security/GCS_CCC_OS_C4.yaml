@@ -1,0 +1,31 @@
+---
+id: GCS_CCC_OS_C4
+info:
+  name: 'GCS CCC Object Storage: Maintain immutable backups of data'
+  severity: info
+  author: FINOS
+code:
+  - engine:
+      - zsh
+    source: GCP/GCS/test-exec_0.0.0 GCS_CCC_OS_C4_TR01
+    matchers:
+      - type: word
+        words:
+          - FAIL
+          - ERROR
+  - engine:
+      - zsh
+    source: GCP/GCS/test-exec_0.0.0 GCS_CCC_OS_C4_TR02
+    matchers:
+      - type: word
+        words:
+          - FAIL
+          - ERROR
+  - engine:
+      - zsh
+    source: GCP/GCS/test-exec_0.0.0 GCS_CCC_OS_C4_TR03
+    matchers:
+      - type: word
+        words:
+          - FAIL
+          - ERROR
