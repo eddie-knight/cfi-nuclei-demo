@@ -6,7 +6,8 @@ info:
 code:
   - engine:
       - zsh
-    source: ../src/test-exec_0.0.0 GCS_CCC_OS_C1_TR01
+    source: |2-
+      src/test-exec_0.0.0 GCS_CCC_OS_C1_TR02
     matchers:
       - type: word
         words:
@@ -14,7 +15,8 @@ code:
           - ERROR
   - engine:
       - zsh
-    source: ../src/test-exec_0.0.0 GCS_CCC_OS_C1_TR02
+    source: |2-
+      src/test-exec_0.0.0 GCS_CCC_OS_C1_TR03
     matchers:
       - type: word
         words:
@@ -22,10 +24,12 @@ code:
           - ERROR
   - engine:
       - zsh
-    source: ../src/test-exec_0.0.0 GCS_CCC_OS_C1_TR03
+    source: |2-
+      src/test-exec_0.0.0 GCS_CCC_OS_C1_TR01
     matchers:
       - type: word
         words:
           - FAIL
           - ERROR
-# digest: 4b0a00483046022100817ace0d4dd8bbf0df7aa6aa59719778ac6efb27551cccb14da92897b9f9bbbd022100e6241d04e04b4927ea8e1e1ae4ed813bebabd6bcac328113c9c3e6002ac365cf:aaf38f31a171ac3523192a918c72ba84
+self-contained: true
+# digest: 4b0a00483046022100caf8242f248ab971ddb2eff720c0d350d45a20948ad02ffb911a02266839815e022100e7ee2a2959dd5c214afad0d3ce65c0e5ad3348b4ab9445a1a032e2d7d9d7f905:aaf38f31a171ac3523192a918c72ba84

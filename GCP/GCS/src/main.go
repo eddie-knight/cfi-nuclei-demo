@@ -15,23 +15,23 @@ var funcMap = map[string]interface{}{
 
 // Pass takes any number of strings and prints them as a single string
 func CFIPass(values ...string) {
-	fmtPrint(values, "PASS")
+	cfiPrint(values, "PASS")
 }
 
 // FAIL takes any number of strings and prints them as a single string
 func CFIFAIL(values ...string) {
-	fmtPrint(values, "FAIL")
+	cfiPrint(values, "FAIL")
 }
 
 // Error takes any number of strings and prints them as a single string
 func CFIError(values ...string) {
-	fmtPrint(values, "ERROR")
+	cfiPrint(values, "ERROR")
 }
 
-// fmtPrint prints the provided values as a single string with a prefix
-func fmtPrint(values []string, prefix string) {
+// cfiPrint prints the provided values as a single string with a prefix
+func cfiPrint(values []string, prefix string) {
 	str := strings.Join(values, " ")
-	fmt.Printf("[%s]: %s\n", prefix, str)
+	fmt.Printf("[%s]: %s", prefix, str)
 }
 
 func main() {
