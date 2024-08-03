@@ -64,7 +64,6 @@ type NucleiProfile struct {
 }
 
 var SOURCE_FILE string
-var PROVIDER string
 var VERSION string
 var OUTPUT_DIR string
 var SERVICE_NAME string
@@ -90,7 +89,7 @@ func main() {
 	setConstants()
 
 	source_data := readYAMLFile()
-	templateFiles := generateNucleiTemplates(source_data, SERVICE_NAME)
+	templateFiles := generateNucleiTemplates(source_data)
 	createNucleiProfile(templateFiles)
 	fmt.Println("")
 	log.Printf("Generation Process Complete\n\n")
@@ -98,25 +97,24 @@ func main() {
 
 func setConstants() {
 	SOURCE_FILE = os.Args[1]
-	PROVIDER = os.Args[2]
 	SERVICE_NAME = os.Args[3]
 	VERSION = os.Args[4]
-	OUTPUT_DIR = setupOutputDir(PROVIDER, SERVICE_NAME)
+	OUTPUT_DIR = setupOutputDir()
 
-	fmt.Printf("Reading component definition from %s\n", SOURCE_FILE)
-	fmt.Printf("Generating Nuclei templates for %s %s\n", SERVICE_NAME, VERSION)
+	fmt.Printf("Generating Nuclei templates for %s %s from %s\n", SERVICE_NAME, VERSION, SOURCE_FILE)
 	fmt.Printf("Profile and templates will be generated in ./%s\n", OUTPUT_DIR)
 }
 
-func setupOutputDir(provider, SERVICE_NAME string) string {
-	OUTPUT_DIR := filepath.Join(provider, SERVICE_NAME)
+func setupOutputDir() string {
+	provider := os.Args[2]
+	outputDir := filepath.Join(provider, SERVICE_NAME)
 	// Create the output directories if they don't exist
-	create_dirs := filepath.Join(OUTPUT_DIR, "security")
+	create_dirs := filepath.Join(outputDir, "security")
 	err := os.MkdirAll(create_dirs, 0755)
 	if err != nil {
 		log.Fatalf("error: %v", err)
 	}
-	return OUTPUT_DIR
+	return outputDir
 }
 
 func readYAMLFile() ComponentDefinition {
@@ -134,7 +132,7 @@ func readYAMLFile() ComponentDefinition {
 	return data
 }
 
-func generateNucleiTemplates(data ComponentDefinition, SERVICE_NAME string) []string {
+func generateNucleiTemplates(data ComponentDefinition) []string {
 	var profileRefNames []string
 	var buffer bytes.Buffer
 	yamlEncoder := yaml.NewEncoder(&buffer)
@@ -193,8 +191,8 @@ func createCodeSection(controlID, testID string) Code {
 }
 
 func writeNucleiTemplateToFile(controlID string, nucleiTemplate NucleiTemplate, yamlEncoder *yaml.Encoder, buffer *bytes.Buffer) string {
-	profileRefName := filepath.Join(SERVICE_NAME, "security", controlID+".yaml")
-	filename := filepath.Join(PROVIDER, profileRefName)
+	profileRefName := filepath.Join("security", controlID+".yaml")
+	filename := filepath.Join(OUTPUT_DIR, profileRefName)
 	fmt.Printf("Writing Nuclei template to %s\n", filename)
 	file, err := os.Create(filename)
 	if err != nil {
@@ -222,12 +220,11 @@ func createNucleiProfile(templateFiles []string) {
 		Templates: templateFiles,
 		Var:       []string{"region=us-east-1"},
 	}
-
 	var buffer bytes.Buffer
 	yamlEncoder := yaml.NewEncoder(&buffer)
 	yamlEncoder.SetIndent(2)
 
-	profileFile := filepath.Join(OUTPUT_DIR, "profile.yaml")
+	profileFile := filepath.Join(OUTPUT_DIR, "security-profile.yaml")
 	pfFile, err := os.Create(profileFile)
 	if err != nil {
 		log.Fatalf("error: %v", err)

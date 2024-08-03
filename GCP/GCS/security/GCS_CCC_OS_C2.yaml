@@ -7,6 +7,14 @@ info:
 code:
   - engine:
       - zsh
+    source: GCP/GCS/test-exec_0.0.0 GCS_CCC_OS_C2_TR01
+    matchers:
+      - type: word
+        words:
+          - FAIL
+          - ERROR
+  - engine:
+      - zsh
     source: GCP/GCS/test-exec_0.0.0 GCS_CCC_OS_C2_TR02
     matchers:
       - type: word
@@ -16,14 +24,6 @@ code:
   - engine:
       - zsh
     source: GCP/GCS/test-exec_0.0.0 GCS_CCC_OS_C2_TR03
-    matchers:
-      - type: word
-        words:
-          - FAIL
-          - ERROR
-  - engine:
-      - zsh
-    source: GCP/GCS/test-exec_0.0.0 GCS_CCC_OS_C2_TR01
     matchers:
       - type: word
         words:

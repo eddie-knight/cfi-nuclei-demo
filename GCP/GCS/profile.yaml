@@ -1,9 +1,0 @@
-code: true
-templates:
-  - GCS/security/GCS_CCC_OS_C1.yaml
-  - GCS/security/GCS_CCC_OS_C2.yaml
-  - GCS/security/GCS_CCC_OS_C3.yaml
-  - GCS/security/GCS_CCC_OS_C4.yaml
-  - GCS/security/GCS_CCC_OS_C5.yaml
-var:
-  - region=us-east-1
