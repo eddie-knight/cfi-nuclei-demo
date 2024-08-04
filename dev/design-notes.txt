@@ -1,0 +1,13 @@
+
+
+
+profile = service controls definition
+  template = control entry (matches feature file)
+    go function (entrypoint) = test requirement
+      go function (called) = test
+
+to run, code source value must:
+    - be multi-line
+    - be in a file that has self-contained: true at the top level
+    - be executed with -code
+    - be called relative to the CALLER's location, not the template file's location

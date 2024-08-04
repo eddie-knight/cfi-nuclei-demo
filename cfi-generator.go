@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"fmt"
+	"html/template"
 	"io/ioutil"
 	"log"
 	"os"
@@ -34,9 +35,10 @@ type Control struct {
 
 // NucleiTemplate represents the structure of the Nuclei template file.
 type NucleiTemplate struct {
-	ID   string `yaml:"id"`
-	Info Info   `yaml:"info"`
-	Code []Code `yaml:"code"`
+	ID            string `yaml:"id"`
+	Info          Info   `yaml:"info"`
+	Code          []Code `yaml:"code"`
+	SelfContained bool   `yaml:"self-contained"`
 }
 
 // Info represents the structure of the info section within the Nuclei template file.
@@ -63,6 +65,7 @@ type NucleiProfile struct {
 	Var       []string `yaml:"var"`
 }
 
+var functionNames = []string{}
 var SOURCE_FILE string
 var VERSION string
 var OUTPUT_DIR string
@@ -91,8 +94,35 @@ func main() {
 	source_data := readYAMLFile()
 	templateFiles := generateNucleiTemplates(source_data)
 	createNucleiProfile(templateFiles)
+	createGoFiles(functionNames)
+
 	fmt.Println("")
 	log.Printf("Generation Process Complete\n\n")
+}
+
+func createGoFiles(functionNames []string) {
+	tmpl, err := template.ParseFiles("templates/main.txt")
+	if err != nil {
+		log.Fatalf("Error reading template file: %v", err)
+	}
+
+	data := struct {
+		FunctionNames []string
+	}{FunctionNames: functionNames}
+
+	outFile, err := os.Create(filepath.Join(OUTPUT_DIR, "src", "main.go"))
+	if err != nil {
+		log.Fatalf("Error creating output file: %v", err)
+	}
+	defer outFile.Close()
+
+	// Execute the template with data and write to the output file
+	err = tmpl.Execute(outFile, data)
+	if err != nil {
+		log.Fatalf("Error executing template: %v", err)
+	}
+
+	log.Println("Template processing complete, output saved to main.go")
 }
 
 func setConstants() {
@@ -145,7 +175,8 @@ func generateNucleiTemplates(data ComponentDefinition) []string {
 				Severity: "info",
 				Author:   "FINOS",
 			},
-			Code: []Code{},
+			SelfContained: true,
+			Code:          []Code{},
 		}
 
 		controlID := generateControlID(control.ID)
@@ -173,11 +204,13 @@ func generateControlID(controlID string) string {
 
 func createCodeSection(controlID, testID string) Code {
 	// the compiled executable will eventually live at this path
-	binSrc := filepath.Join("..", "src", "test-exec_"+VERSION)
+	binSrc := filepath.Join("src", "test-exec_"+VERSION)
+	functionName := fmt.Sprintf("%s_TR%s", controlID, testID)
+	functionNames = append(functionNames, functionName)
 
 	return Code{
 		Engine: []string{"zsh"}, // This might need to change depending on what the runners are using
-		Source: fmt.Sprintf("%s %s_TR%s", binSrc, controlID, testID),
+		Source: fmt.Sprintf("\n%s %s", binSrc, functionName),
 		Matchers: []struct {
 			Type  string   `yaml:"type"`
 			Words []string `yaml:"words"`
