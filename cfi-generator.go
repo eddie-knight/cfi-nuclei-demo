@@ -6,6 +6,7 @@ import (
 	"html/template"
 	"io/ioutil"
 	"log"
+	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -92,7 +93,7 @@ func main() {
 
 	setConstants()
 
-	source_data := readYAMLFile()
+	source_data := readData()
 	templateFiles := generateNucleiTemplates(source_data)
 	createNucleiProfile(templateFiles)
 	createGoFiles(functionNames)
@@ -102,19 +103,60 @@ func main() {
 }
 
 func createGoFiles(functionNames []string) {
+	createGoModFile()
 	createMainGoFile(functionNames)
 	createSecurityGoFile(functionNames)
+	// goModTidy()
 }
 
-func createMainGoFile(functionNames []string) {
-	tmpl, err := template.ParseFiles("templates/main.txt")
+func goModTidy() {
+	cmd := exec.Command("go", "mod", "tidy")
+
+	// Set the output for the command
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
+	// Execute the command
+	err := cmd.Run()
+	if err != nil {
+		log.Fatalf("Failed to run go mod tidy command: %s", err)
+	}
+}
+
+func createGoModFile() {
+	data := struct {
+		ServiceName string
+	}{ServiceName: SERVICE_NAME}
+
+	tmpl, err := template.ParseFiles("templates/go.mod")
 	if err != nil {
 		log.Fatalf("Error reading template file: %v", err)
 	}
 
+	outFile, err := os.Create(filepath.Join(OUTPUT_DIR, "src", "go.mod"))
+	if err != nil {
+		log.Fatalf("Error creating output file: %v", err)
+	}
+	defer outFile.Close()
+
+	// Execute the template with data and write to the output file
+	err = tmpl.Execute(outFile, data)
+	if err != nil {
+		log.Fatalf("Error executing template: %v", err)
+	}
+
+	log.Println("Writing go.mod file for service")
+}
+
+func createMainGoFile(functionNames []string) {
 	data := struct {
 		FunctionNames []string
 	}{FunctionNames: functionNames}
+
+	tmpl, err := template.ParseFiles("templates/main.txt")
+	if err != nil {
+		log.Fatalf("Error reading template file: %v", err)
+	}
 
 	outFile, err := os.Create(filepath.Join(OUTPUT_DIR, "src", "main.go"))
 	if err != nil {
@@ -160,34 +202,70 @@ func setConstants() {
 	SOURCE_FILE = os.Args[1]
 	SERVICE_NAME = os.Args[3]
 	VERSION = os.Args[4]
-	OUTPUT_DIR = setupOutputDir()
+	OUTPUT_DIR = setupOutputDirs()
 
 	fmt.Printf("Generating Nuclei templates for %s %s from %s\n", SERVICE_NAME, VERSION, SOURCE_FILE)
 	fmt.Printf("Profile and templates will be generated in ./%s\n", OUTPUT_DIR)
 }
 
-func setupOutputDir() string {
+func setupOutputDirs() string {
 	provider := os.Args[2]
 	outputDir := filepath.Join(provider, SERVICE_NAME)
 	// Create the output directories if they don't exist
-	create_dirs := filepath.Join(outputDir, "security")
+	create_dirs := filepath.Join(outputDir, "security-templates")
 	err := os.MkdirAll(create_dirs, 0755)
 	if err != nil {
 		log.Fatalf("error: %v", err)
 	}
+
+	create_dirs = filepath.Join(outputDir, "src")
+	err = os.MkdirAll(create_dirs, 0755)
+	if err != nil {
+		log.Fatalf("error: %v", err)
+	}
+
 	return outputDir
+}
+
+func readData() ComponentDefinition {
+	if strings.HasPrefix(SOURCE_FILE, "http") {
+		return readYAMLURL()
+	} else {
+		return readYAMLFile()
+	}
+}
+
+func readYAMLURL() ComponentDefinition {
+	resp, err := http.Get(SOURCE_FILE)
+	if err != nil {
+		log.Fatalf("Failed to fetch URL: %v", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		log.Fatalf("Failed to fetch URL: %v", resp.Status)
+	}
+
+	var data ComponentDefinition
+	decoder := yaml.NewDecoder(resp.Body)
+	err = decoder.Decode(&data)
+	if err != nil {
+		log.Fatalf("Failed to decode YAML from URL: %v", err)
+	}
+
+	return data
 }
 
 func readYAMLFile() ComponentDefinition {
 	yamlFile, err := ioutil.ReadFile(SOURCE_FILE)
 	if err != nil {
-		log.Fatalf("error: %v", err)
+		log.Fatalf("Error reading file: %v", err)
 	}
 
 	var data ComponentDefinition
 	err = yaml.Unmarshal(yamlFile, &data)
 	if err != nil {
-		log.Fatalf("error: %v", err)
+		log.Fatalf("Error unmarshalling YAML file: %v", err)
 	}
 
 	return data
@@ -255,7 +333,7 @@ func createCodeSection(controlID, testID string) Code {
 }
 
 func writeNucleiTemplateToFile(controlID string, nucleiTemplate NucleiTemplate, yamlEncoder *yaml.Encoder, buffer *bytes.Buffer) string {
-	profileRefName := filepath.Join("security", controlID+".yaml")
+	profileRefName := filepath.Join("security-templates", controlID+".yaml")
 	filename := filepath.Join(OUTPUT_DIR, profileRefName)
 	fmt.Printf("Writing Nuclei template to %s\n", filename)
 	file, err := os.Create(filename)
@@ -275,7 +353,6 @@ func writeNucleiTemplateToFile(controlID string, nucleiTemplate NucleiTemplate, 
 		log.Fatalf("error: %v", err)
 	}
 	signNuclei(filename)
-	log.Printf("Nuclei template %s written and signed successfully\n", controlID)
 
 	return profileRefName
 }

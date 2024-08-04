@@ -1,245 +1,245 @@
-package main
+// package main
 
-import (
-	"bytes"
-	"fmt"
-	"io/ioutil"
-	"log"
-	"os"
-	"path/filepath"
-	"strings"
+// import (
+// 	"bytes"
+// 	"fmt"
+// 	"io/ioutil"
+// 	"log"
+// 	"os"
+// 	"path/filepath"
+// 	"strings"
 
-	"gopkg.in/yaml.v3"
-)
+// 	"gopkg.in/yaml.v3"
+// )
 
-// ComponentDefinition represents the structure of the input YAML file.
-type ComponentDefinition struct {
-	ID       string    `yaml:"id"`
-	Title    string    `yaml:"title"`
-	VERSION  string    `yaml:"VERSION"`
-	Controls []Control `yaml:"controls"`
-}
+// // ComponentDefinition represents the structure of the input YAML file.
+// type ComponentDefinition struct {
+// 	ID       string    `yaml:"id"`
+// 	Title    string    `yaml:"title"`
+// 	VERSION  string    `yaml:"VERSION"`
+// 	Controls []Control `yaml:"controls"`
+// }
 
-// Control represents the structure of each control within the YAML file.
-type Control struct {
-	ID               string              `yaml:"id"`
-	FeatureID        string              `yaml:"feature_id"`
-	Title            string              `yaml:"title"`
-	Objective        string              `yaml:"objective"`
-	NISTCSF          string              `yaml:"nist_csf"`
-	MITREAttack      string              `yaml:"mitre_attack"`
-	ControlMappings  map[string][]string `yaml:"control_mappings"`
-	TestRequirements map[string]string   `yaml:"test_requirements"`
-}
+// // Control represents the structure of each control within the YAML file.
+// type Control struct {
+// 	ID               string              `yaml:"id"`
+// 	FeatureID        string              `yaml:"feature_id"`
+// 	Title            string              `yaml:"title"`
+// 	Objective        string              `yaml:"objective"`
+// 	NISTCSF          string              `yaml:"nist_csf"`
+// 	MITREAttack      string              `yaml:"mitre_attack"`
+// 	ControlMappings  map[string][]string `yaml:"control_mappings"`
+// 	TestRequirements map[string]string   `yaml:"test_requirements"`
+// }
 
-// NucleiTemplate represents the structure of the Nuclei template file.
-type NucleiTemplate struct {
-	ID   string `yaml:"id"`
-	Info Info   `yaml:"info"`
-	Code []Code `yaml:"code"`
-}
+// // NucleiTemplate represents the structure of the Nuclei template file.
+// type NucleiTemplate struct {
+// 	ID   string `yaml:"id"`
+// 	Info Info   `yaml:"info"`
+// 	Code []Code `yaml:"code"`
+// }
 
-// Info represents the structure of the info section within the Nuclei template file.
-type Info struct {
-	Name     string `yaml:"name"`
-	Severity string `yaml:"severity"`
-	Author   string `yaml:"author"`
-}
+// // Info represents the structure of the info section within the Nuclei template file.
+// type Info struct {
+// 	Name     string `yaml:"name"`
+// 	Severity string `yaml:"severity"`
+// 	Author   string `yaml:"author"`
+// }
 
-// Code represents the structure of the code section within the Nuclei template file.
-type Code struct {
-	Engine   []string `yaml:"engine"`
-	Source   string   `yaml:"source"`
-	Matchers []struct {
-		Type  string   `yaml:"type"`
-		Words []string `yaml:"words"`
-	} `yaml:"matchers"`
-}
+// // Code represents the structure of the code section within the Nuclei template file.
+// type Code struct {
+// 	Engine   []string `yaml:"engine"`
+// 	Source   string   `yaml:"source"`
+// 	Matchers []struct {
+// 		Type  string   `yaml:"type"`
+// 		Words []string `yaml:"words"`
+// 	} `yaml:"matchers"`
+// }
 
-// NucleiProfile represents the structure of the Nuclei profile file.
-type NucleiProfile struct {
-	Code      bool     `yaml:"code"`
-	Templates []string `yaml:"templates"`
-	Var       []string `yaml:"var"`
-}
+// // NucleiProfile represents the structure of the Nuclei profile file.
+// type NucleiProfile struct {
+// 	Code      bool     `yaml:"code"`
+// 	Templates []string `yaml:"templates"`
+// 	Var       []string `yaml:"var"`
+// }
 
-var SOURCE_FILE string
-var VERSION string
-var OUTPUT_DIR string
-var SERVICE_NAME string
+// var SOURCE_FILE string
+// var VERSION string
+// var OUTPUT_DIR string
+// var SERVICE_NAME string
 
-func main() {
-	fmt.Println("")
-	log.Printf("Beginning Generation Process\n\n")
-	// exit with a warning if no arguments are provided
-	if len(os.Args) < 2 {
-		log.Fatalf("[ERROR] Please provide the YAML component definition file as the first argument.")
-	} else if len(os.Args) < 3 {
-		log.Fatalf("[ERROR] Please provide the abbreviated name of the CSP as the second argument.")
-	} else if len(os.Args) < 4 {
-		log.Fatalf("[ERROR] Please provide the abbreviated name of the service as the third argument.")
-	} else if len(os.Args[2]) > 8 {
-		log.Fatalf("[ERROR] The service name must be shorter than 8 characters.")
-	} else if len(os.Args) < 5 {
-		log.Fatalf("[ERROR] Please provide the VERSION of the service as the fourth argument.")
-	} else if len(os.Args[4]) > 8 {
-		log.Fatalf("[ERROR] The VERSION must be shorter than 8 characters.")
-	}
+// func main() {
+// 	fmt.Println("")
+// 	log.Printf("Beginning Generation Process\n\n")
+// 	// exit with a warning if no arguments are provided
+// 	if len(os.Args) < 2 {
+// 		log.Fatalf("[ERROR] Please provide the YAML component definition file as the first argument.")
+// 	} else if len(os.Args) < 3 {
+// 		log.Fatalf("[ERROR] Please provide the abbreviated name of the CSP as the second argument.")
+// 	} else if len(os.Args) < 4 {
+// 		log.Fatalf("[ERROR] Please provide the abbreviated name of the service as the third argument.")
+// 	} else if len(os.Args[2]) > 8 {
+// 		log.Fatalf("[ERROR] The service name must be shorter than 8 characters.")
+// 	} else if len(os.Args) < 5 {
+// 		log.Fatalf("[ERROR] Please provide the VERSION of the service as the fourth argument.")
+// 	} else if len(os.Args[4]) > 8 {
+// 		log.Fatalf("[ERROR] The VERSION must be shorter than 8 characters.")
+// 	}
 
-	setConstants()
+// 	setConstants()
 
-	source_data := readYAMLFile()
-	templateFiles := generateNucleiTemplates(source_data)
-	createNucleiProfile(templateFiles)
-	fmt.Println("")
-	log.Printf("Generation Process Complete\n\n")
-}
+// 	source_data := readYAMLFile()
+// 	templateFiles := generateNucleiTemplates(source_data)
+// 	createNucleiProfile(templateFiles)
+// 	fmt.Println("")
+// 	log.Printf("Generation Process Complete\n\n")
+// }
 
-func setConstants() {
-	SOURCE_FILE = os.Args[1]
-	SERVICE_NAME = os.Args[3]
-	VERSION = os.Args[4]
-	OUTPUT_DIR = setupOutputDir()
+// func setConstants() {
+// 	SOURCE_FILE = os.Args[1]
+// 	SERVICE_NAME = os.Args[3]
+// 	VERSION = os.Args[4]
+// 	OUTPUT_DIR = setupOutputDir()
 
-	fmt.Printf("Reading component definition from %s\n", SOURCE_FILE)
-	fmt.Printf("Generating Nuclei templates for %s %s\n", SERVICE_NAME, VERSION)
-	fmt.Printf("Profile and templates will be generated in ./%s\n", OUTPUT_DIR)
-}
+// 	fmt.Printf("Reading component definition from %s\n", SOURCE_FILE)
+// 	fmt.Printf("Generating Nuclei templates for %s %s\n", SERVICE_NAME, VERSION)
+// 	fmt.Printf("Profile and templates will be generated in ./%s\n", OUTPUT_DIR)
+// }
 
-func setupOutputDir() string {
-	provider := os.Args[2]
-	outputDir := filepath.Join(provider, SERVICE_NAME)
-	// Create the output directories if they don't exist
-	create_dirs := filepath.Join(outputDir, "security")
-	err := os.MkdirAll(create_dirs, 0755)
-	if err != nil {
-		log.Fatalf("error: %v", err)
-	}
-	return outputDir
-}
+// func setupOutputDir() string {
+// 	provider := os.Args[2]
+// 	outputDir := filepath.Join(provider, SERVICE_NAME)
+// 	// Create the output directories if they don't exist
+// 	create_dirs := filepath.Join(outputDir, "security")
+// 	err := os.MkdirAll(create_dirs, 0755)
+// 	if err != nil {
+// 		log.Fatalf("error: %v", err)
+// 	}
+// 	return outputDir
+// }
 
-func readYAMLFile() ComponentDefinition {
-	yamlFile, err := ioutil.ReadFile(SOURCE_FILE)
-	if err != nil {
-		log.Fatalf("error: %v", err)
-	}
+// func readYAMLFile() ComponentDefinition {
+// 	yamlFile, err := ioutil.ReadFile(SOURCE_FILE)
+// 	if err != nil {
+// 		log.Fatalf("error: %v", err)
+// 	}
 
-	var data ComponentDefinition
-	err = yaml.Unmarshal(yamlFile, &data)
-	if err != nil {
-		log.Fatalf("error: %v", err)
-	}
+// 	var data ComponentDefinition
+// 	err = yaml.Unmarshal(yamlFile, &data)
+// 	if err != nil {
+// 		log.Fatalf("error: %v", err)
+// 	}
 
-	return data
-}
+// 	return data
+// }
 
-func generateNucleiTemplates(data ComponentDefinition) []string {
-	var profileRefNames []string
-	var buffer bytes.Buffer
-	yamlEncoder := yaml.NewEncoder(&buffer)
-	yamlEncoder.SetIndent(2)
+// func generateNucleiTemplates(data ComponentDefinition) []string {
+// 	var profileRefNames []string
+// 	var buffer bytes.Buffer
+// 	yamlEncoder := yaml.NewEncoder(&buffer)
+// 	yamlEncoder.SetIndent(2)
 
-	// Create a separate template file for each control
-	for _, control := range data.Controls {
-		nucleiTemplate := NucleiTemplate{
-			Info: Info{
-				Severity: "info",
-				Author:   "FINOS",
-			},
-			Code: []Code{},
-		}
+// 	// Create a separate template file for each control
+// 	for _, control := range data.Controls {
+// 		nucleiTemplate := NucleiTemplate{
+// 			Info: Info{
+// 				Severity: "info",
+// 				Author:   "FINOS",
+// 			},
+// 			Code: []Code{},
+// 		}
 
-		controlID := generateControlID(control.ID)
+// 		controlID := generateControlID(control.ID)
 
-		// Override the template data with the control data
-		nucleiTemplate.ID = controlID
-		nucleiTemplate.Info.Name = fmt.Sprintf("%s %s: %s", SERVICE_NAME, data.Title, control.Title)
+// 		// Override the template data with the control data
+// 		nucleiTemplate.ID = controlID
+// 		nucleiTemplate.Info.Name = fmt.Sprintf("%s %s: %s", SERVICE_NAME, data.Title, control.Title)
 
-		// Create a code section for each test requirement
-		for testID := range control.TestRequirements {
-			code := createCodeSection(controlID, testID)
-			nucleiTemplate.Code = append(nucleiTemplate.Code, code)
-		}
+// 		// Create a code section for each test requirement
+// 		for testID := range control.TestRequirements {
+// 			code := createCodeSection(controlID, testID)
+// 			nucleiTemplate.Code = append(nucleiTemplate.Code, code)
+// 		}
 
-		profileRefName := writeNucleiTemplateToFile(controlID, nucleiTemplate, yamlEncoder, &buffer)
-		profileRefNames = append(profileRefNames, profileRefName)
-	}
+// 		profileRefName := writeNucleiTemplateToFile(controlID, nucleiTemplate, yamlEncoder, &buffer)
+// 		profileRefNames = append(profileRefNames, profileRefName)
+// 	}
 
-	return profileRefNames
-}
+// 	return profileRefNames
+// }
 
-func generateControlID(controlID string) string {
-	return fmt.Sprintf("%s_%s", os.Args[3], strings.Replace(controlID, ".", "_", -1))
-}
+// func generateControlID(controlID string) string {
+// 	return fmt.Sprintf("%s_%s", os.Args[3], strings.Replace(controlID, ".", "_", -1))
+// }
 
-func createCodeSection(controlID, testID string) Code {
-	// the compiled executable will eventually live at this path
-	binSrc := filepath.Join(OUTPUT_DIR, "test-exec_"+VERSION)
+// func createCodeSection(controlID, testID string) Code {
+// 	// the compiled executable will eventually live at this path
+// 	binSrc := filepath.Join(OUTPUT_DIR, "test-exec_"+VERSION)
 
-	return Code{
-		Engine: []string{"zsh"}, // This might need to change depending on what the runners are using
-		Source: fmt.Sprintf("%s %s_TR%s", binSrc, controlID, testID),
-		Matchers: []struct {
-			Type  string   `yaml:"type"`
-			Words []string `yaml:"words"`
-		}{
-			{
-				Type:  "word",
-				Words: []string{"FAIL", "ERROR"},
-			},
-		},
-	}
-}
+// 	return Code{
+// 		Engine: []string{"zsh"}, // This might need to change depending on what the runners are using
+// 		Source: fmt.Sprintf("%s %s_TR%s", binSrc, controlID, testID),
+// 		Matchers: []struct {
+// 			Type  string   `yaml:"type"`
+// 			Words []string `yaml:"words"`
+// 		}{
+// 			{
+// 				Type:  "word",
+// 				Words: []string{"FAIL", "ERROR"},
+// 			},
+// 		},
+// 	}
+// }
 
-func writeNucleiTemplateToFile(controlID string, nucleiTemplate NucleiTemplate, yamlEncoder *yaml.Encoder, buffer *bytes.Buffer) string {
-	profileRefName := filepath.Join("security", controlID+".yaml")
-	filename := filepath.Join(OUTPUT_DIR, profileRefName)
-	fmt.Printf("Writing Nuclei template to %s\n", filename)
-	file, err := os.Create(filename)
-	if err != nil {
-		log.Fatalf("error: %v", err)
-	}
-	defer file.Close()
+// func writeNucleiTemplateToFile(controlID string, nucleiTemplate NucleiTemplate, yamlEncoder *yaml.Encoder, buffer *bytes.Buffer) string {
+// 	profileRefName := filepath.Join("security", controlID+".yaml")
+// 	filename := filepath.Join(OUTPUT_DIR, profileRefName)
+// 	fmt.Printf("Writing Nuclei template to %s\n", filename)
+// 	file, err := os.Create(filename)
+// 	if err != nil {
+// 		log.Fatalf("error: %v", err)
+// 	}
+// 	defer file.Close()
 
-	buffer.Reset()
-	yamlEncoder.Encode(nucleiTemplate)
-	if err != nil {
-		log.Fatalf("error: %v", err)
-	}
+// 	buffer.Reset()
+// 	yamlEncoder.Encode(nucleiTemplate)
+// 	if err != nil {
+// 		log.Fatalf("error: %v", err)
+// 	}
 
-	_, err = file.Write(buffer.Bytes())
-	if err != nil {
-		log.Fatalf("error: %v", err)
-	}
+// 	_, err = file.Write(buffer.Bytes())
+// 	if err != nil {
+// 		log.Fatalf("error: %v", err)
+// 	}
 
-	return profileRefName
-}
+// 	return profileRefName
+// }
 
-func createNucleiProfile(templateFiles []string) {
-	profile := NucleiProfile{
-		Code:      true,
-		Templates: templateFiles,
-		Var:       []string{"region=us-east-1"},
-	}
+// func createNucleiProfile(templateFiles []string) {
+// 	profile := NucleiProfile{
+// 		Code:      true,
+// 		Templates: templateFiles,
+// 		Var:       []string{"region=us-east-1"},
+// 	}
 
-	var buffer bytes.Buffer
-	yamlEncoder := yaml.NewEncoder(&buffer)
-	yamlEncoder.SetIndent(2)
+// 	var buffer bytes.Buffer
+// 	yamlEncoder := yaml.NewEncoder(&buffer)
+// 	yamlEncoder.SetIndent(2)
 
-	profileFile := filepath.Join(OUTPUT_DIR, "profile.yaml")
-	pfFile, err := os.Create(profileFile)
-	if err != nil {
-		log.Fatalf("error: %v", err)
-	}
-	defer pfFile.Close()
+// 	profileFile := filepath.Join(OUTPUT_DIR, "profile.yaml")
+// 	pfFile, err := os.Create(profileFile)
+// 	if err != nil {
+// 		log.Fatalf("error: %v", err)
+// 	}
+// 	defer pfFile.Close()
 
-	yamlEncoder.Encode(profile)
-	if err != nil {
-		log.Fatalf("error: %v", err)
-	}
+// 	yamlEncoder.Encode(profile)
+// 	if err != nil {
+// 		log.Fatalf("error: %v", err)
+// 	}
 
-	_, err = pfFile.Write(buffer.Bytes())
-	if err != nil {
-		log.Fatalf("error: %v", err)
-	}
-}
+// 	_, err = pfFile.Write(buffer.Bytes())
+// 	if err != nil {
+// 		log.Fatalf("error: %v", err)
+// 	}
+// }

@@ -1,0 +1,36 @@
+---
+id: GCS_CCC_OS_C4
+info:
+  name: 'GCS CCC Object Storage Security Controls: Maintain immutable backups of data'
+  severity: info
+  author: FINOS
+code:
+  - engine:
+      - zsh
+    source: |2-
+      src/test-exec_0.0.0 GCS_CCC_OS_C4_TR01
+    matchers:
+      - type: word
+        words:
+          - FAIL
+          - ERROR
+  - engine:
+      - zsh
+    source: |2-
+      src/test-exec_0.0.0 GCS_CCC_OS_C4_TR02
+    matchers:
+      - type: word
+        words:
+          - FAIL
+          - ERROR
+  - engine:
+      - zsh
+    source: |2-
+      src/test-exec_0.0.0 GCS_CCC_OS_C4_TR03
+    matchers:
+      - type: word
+        words:
+          - FAIL
+          - ERROR
+self-contained: true
+# digest: 4a0a00473045022100ec925c8be462264c65ee8d79303f1d763202038636390124ce02f71a00ac059f02203ea60f0ed903375c85c9df7ac7a5f89237168b595537084adbe8a0ea58e724ac:aaf38f31a171ac3523192a918c72ba84

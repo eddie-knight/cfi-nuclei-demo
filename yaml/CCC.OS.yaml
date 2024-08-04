@@ -1,6 +1,6 @@
-# Development definition of CCC Object Storage
-id: CCC.OS
-title: CCC Object Storage
+# In-progress controls definition for CCC Object Storage
+title: CCC Object Storage Security Controls
+category-id: CCC.OS
 controls:
   - id: CCC.OS.C1
     feature_id: CCC-020115

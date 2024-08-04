@@ -1,0 +1,36 @@
+---
+id: GCS_CCC_OS_C2
+info:
+  name: 'GCS CCC Object Storage Security Controls: Ensure data encryption at rest'
+  severity: info
+  author: FINOS
+code:
+  - engine:
+      - zsh
+    source: |2-
+      src/test-exec_0.0.0 GCS_CCC_OS_C2_TR01
+    matchers:
+      - type: word
+        words:
+          - FAIL
+          - ERROR
+  - engine:
+      - zsh
+    source: |2-
+      src/test-exec_0.0.0 GCS_CCC_OS_C2_TR02
+    matchers:
+      - type: word
+        words:
+          - FAIL
+          - ERROR
+  - engine:
+      - zsh
+    source: |2-
+      src/test-exec_0.0.0 GCS_CCC_OS_C2_TR03
+    matchers:
+      - type: word
+        words:
+          - FAIL
+          - ERROR
+self-contained: true
+# digest: 4a0a00473045022100b735be182a8b22e4b8decb38681d949d22eb23e4f9714dab6934feec7c4bfd6a022023ece3b324e84e273a39261fe72c608688cc204ff85acc3ad9872a156fadeea3:aaf38f31a171ac3523192a918c72ba84
