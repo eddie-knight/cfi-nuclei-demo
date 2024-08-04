@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 
@@ -101,6 +102,11 @@ func main() {
 }
 
 func createGoFiles(functionNames []string) {
+	createMainGoFile(functionNames)
+	createSecurityGoFile(functionNames)
+}
+
+func createMainGoFile(functionNames []string) {
 	tmpl, err := template.ParseFiles("templates/main.txt")
 	if err != nil {
 		log.Fatalf("Error reading template file: %v", err)
@@ -122,7 +128,32 @@ func createGoFiles(functionNames []string) {
 		log.Fatalf("Error executing template: %v", err)
 	}
 
-	log.Println("Template processing complete, output saved to main.go")
+	log.Println("Writing main function wireframe to main.go")
+}
+
+func createSecurityGoFile(functionNames []string) {
+	tmpl, err := template.ParseFiles("templates/security.txt")
+	if err != nil {
+		log.Fatalf("Error reading template file: %v", err)
+	}
+
+	data := struct {
+		FunctionNames []string
+	}{FunctionNames: functionNames}
+
+	outFile, err := os.Create(filepath.Join(OUTPUT_DIR, "src", "security.go"))
+	if err != nil {
+		log.Fatalf("Error creating output file: %v", err)
+	}
+	defer outFile.Close()
+
+	// Execute the template with data and write to the output file
+	err = tmpl.Execute(outFile, data)
+	if err != nil {
+		log.Fatalf("Error executing template: %v", err)
+	}
+
+	log.Println("Writing security functions wireframe to security.go")
 }
 
 func setConstants() {
@@ -243,8 +274,24 @@ func writeNucleiTemplateToFile(controlID string, nucleiTemplate NucleiTemplate, 
 	if err != nil {
 		log.Fatalf("error: %v", err)
 	}
+	signNuclei(filename)
+	log.Printf("Nuclei template %s written and signed successfully\n", controlID)
 
 	return profileRefName
+}
+
+func signNuclei(filepath string) {
+	cmd := exec.Command("nuclei", "-t", filepath, "-code", "-sign")
+
+	// Set the output for the command
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
+	// Execute the command
+	err := cmd.Run()
+	if err != nil {
+		log.Fatalf("Failed to run nuclei sign command: %s", err)
+	}
 }
 
 func createNucleiProfile(templateFiles []string) {

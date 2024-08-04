@@ -1,0 +1,55 @@
+---
+id: GCP_CCC_OS_C2
+info:
+  name: 'CCC Object Storage: Ensure data encryption at rest'
+  severity: info
+  author: FINOS
+code:
+  - engine:
+      - zsh
+    source: ~/dev/nuclei-demo/bin/gcp/gcs/gcs-1.42.0 GCP_CCC_OS_C1_01
+    matchers:
+      - type: word
+        words:
+          - FAIL
+          - ERROR
+  - engine:
+      - zsh
+    source: ~/dev/nuclei-demo/bin/gcp/gcs/gcs-1.42.0 GCP_CCC_OS_C1_02
+    matchers:
+      - type: word
+        words:
+          - FAIL
+          - ERROR
+  - engine:
+      - zsh
+    source: ~/dev/nuclei-demo/bin/gcp/gcs/gcs-1.42.0 GCP_CCC_OS_C1_03
+    matchers:
+      - type: word
+        words:
+          - FAIL
+          - ERROR
+  - engine:
+      - zsh
+    source: ~/dev/nuclei-demo/bin/gcp/gcs/gcs-1.42.0 GCP_CCC_OS_C2_01
+    matchers:
+      - type: word
+        words:
+          - FAIL
+          - ERROR
+  - engine:
+      - zsh
+    source: ~/dev/nuclei-demo/bin/gcp/gcs/gcs-1.42.0 GCP_CCC_OS_C2_02
+    matchers:
+      - type: word
+        words:
+          - FAIL
+          - ERROR
+  - engine:
+      - zsh
+    source: ~/dev/nuclei-demo/bin/gcp/gcs/gcs-1.42.0 GCP_CCC_OS_C2_03
+    matchers:
+      - type: word
+        words:
+          - FAIL
+          - ERROR

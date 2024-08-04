@@ -1,0 +1,30 @@
+id: GCP_CCC_OS_C1
+info:
+  name: 'CCC Object Storage: Prevent unencrypted requests to object storage bucket'
+  severity: info
+  author: FINOS
+code:
+  - engine:
+      - zsh
+    source: ~/dev/nuclei-demo/bin/gcp/gcs/gcs-1.42.0 GCP_CCC_OS_C1_01
+    matchers:
+      - type: word
+        words:
+          - FAIL
+          - ERROR
+  - engine:
+      - zsh
+    source: ~/dev/nuclei-demo/bin/gcp/gcs/gcs-1.42.0 GCP_CCC_OS_C1_02
+    matchers:
+      - type: word
+        words:
+          - FAIL
+          - ERROR
+  - engine:
+      - zsh
+    source: ~/dev/nuclei-demo/bin/gcp/gcs/gcs-1.42.0 GCP_CCC_OS_C1_03
+    matchers:
+      - type: word
+        words:
+          - FAIL
+          - ERROR

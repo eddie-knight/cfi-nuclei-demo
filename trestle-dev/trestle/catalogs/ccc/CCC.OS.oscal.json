@@ -1,0 +1,174 @@
+{
+  "metadata": {
+    "title": "CCC Object Storage",
+    "description": "CCC Object Storage",
+    "version": "1.0.0"
+  },
+  "components": [
+    {
+      "uuid": "CCC.OS.C1",
+      "title": "Prevent unencrypted requests to object storage bucket",
+      "description": "Prevent any unencrypted requests to the object storage bucket, ensuring that all communications are encrypted in transit to protect data integrity and confidentiality.",
+      "control-implementations": [
+        {
+          "uuid": "CCC.OS.C1",
+          "source": "https://example.com/source",
+          "description": "Prevent unencrypted requests to object storage bucket",
+          "implemented-requirements": [
+            {
+              "uuid": "CCC.OS.C1",
+              "control-id": "CCC.OS.C1",
+              "prose": "Prevent any unencrypted requests to the object storage bucket, ensuring that all communications are encrypted in transit to protect data integrity and confidentiality.",
+              "test-procedures": [
+                {
+                  "uuid": "CCC.OS.C1.TR01",
+                  "prose": "All supported network data protocols must be running on secure channels."
+                },
+                {
+                  "uuid": "CCC.OS.C1.TR02",
+                  "prose": "All clear text channels should be disabled."
+                },
+                {
+                  "uuid": "CCC.OS.C1.TR03",
+                  "prose": "The cipher suite implemented for ensuring the integrity and confidentiality of data should conform with the latest suggested cipher suites. [NIST proposed latest standard cipher suites](\u003c[#](https://csrc.nist.gov/pubs/sp/800/52/r2/final)\u003e)."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "uuid": "CCC.OS.C2",
+      "title": "Ensure data encryption at rest",
+      "description": "Ensure that all data stored within the object storage service is encrypted at rest to maintain confidentiality and integrity.",
+      "control-implementations": [
+        {
+          "uuid": "CCC.OS.C2",
+          "source": "https://example.com/source",
+          "description": "Ensure data encryption at rest",
+          "implemented-requirements": [
+            {
+              "uuid": "CCC.OS.C2",
+              "control-id": "CCC.OS.C2",
+              "prose": "Ensure that all data stored within the object storage service is encrypted at rest to maintain confidentiality and integrity.",
+              "test-procedures": [
+                {
+                  "uuid": "CCC.OS.C2.TR01",
+                  "prose": "Verify that data stored in the object storage bucket is encrypted using industry-standard algorithms."
+                },
+                {
+                  "uuid": "CCC.OS.C2.TR02",
+                  "prose": "Ensure that encryption keys are managed securely and rotated periodically."
+                },
+                {
+                  "uuid": "CCC.OS.C2.TR03",
+                  "prose": "Confirm that decryption is only possible through authorized access mechanisms."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "uuid": "CCC.OS.C3",
+      "title": "Implement multi-factor authentication (MFA) for access",
+      "description": "Ensure that all human user access to object storage buckets requires multi-factor authentication (MFA), minimizing the risk of unauthorized access by enforcing strong authentication mechanisms.",
+      "control-implementations": [
+        {
+          "uuid": "CCC.OS.C3",
+          "source": "https://example.com/source",
+          "description": "Implement multi-factor authentication (MFA) for access",
+          "implemented-requirements": [
+            {
+              "uuid": "CCC.OS.C3",
+              "control-id": "CCC.OS.C3",
+              "prose": "Ensure that all human user access to object storage buckets requires multi-factor authentication (MFA), minimizing the risk of unauthorized access by enforcing strong authentication mechanisms.",
+              "test-procedures": [
+                {
+                  "uuid": "CCC.OS.C3.TR01",
+                  "prose": "Verify that MFA is enforced for all access attempts to the object storage bucket."
+                },
+                {
+                  "uuid": "CCC.OS.C3.TR02",
+                  "prose": "Ensure that MFA is required for all administrative access to the storage management interface."
+                },
+                {
+                  "uuid": "CCC.OS.C3.TR03",
+                  "prose": "Confirm that users are unable to access the object storage bucket without completing MFA."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "uuid": "CCC.OS.C4",
+      "title": "Maintain immutable backups of data",
+      "description": "Ensure that data stored in the object storage bucket is immutable for a defined period, preventing unauthorized modifications or deletions and thereby mitigating data destruction.",
+      "control-implementations": [
+        {
+          "uuid": "CCC.OS.C4",
+          "source": "https://example.com/source",
+          "description": "Maintain immutable backups of data",
+          "implemented-requirements": [
+            {
+              "uuid": "CCC.OS.C4",
+              "control-id": "CCC.OS.C4",
+              "prose": "Ensure that data stored in the object storage bucket is immutable for a defined period, preventing unauthorized modifications or deletions and thereby mitigating data destruction.",
+              "test-procedures": [
+                {
+                  "uuid": "CCC.OS.C4.TR01",
+                  "prose": "Verify that data in the object storage bucket is protected by immutability settings."
+                },
+                {
+                  "uuid": "CCC.OS.C4.TR02",
+                  "prose": "Ensure that attempts to modify or delete data within the immutability period are denied."
+                },
+                {
+                  "uuid": "CCC.OS.C4.TR03",
+                  "prose": "Confirm that immutable data remains unchanged throughout the defined retention period."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "uuid": "CCC.OS.C5",
+      "title": "Log all access and changes to object storage",
+      "description": "Ensure that all access and changes to the object storage bucket are logged to maintain a detailed audit trail for security and compliance purposes.",
+      "control-implementations": [
+        {
+          "uuid": "CCC.OS.C5",
+          "source": "https://example.com/source",
+          "description": "Log all access and changes to object storage",
+          "implemented-requirements": [
+            {
+              "uuid": "CCC.OS.C5",
+              "control-id": "CCC.OS.C5",
+              "prose": "Ensure that all access and changes to the object storage bucket are logged to maintain a detailed audit trail for security and compliance purposes.",
+              "test-procedures": [
+                {
+                  "uuid": "CCC.OS.C5.TR01",
+                  "prose": "Verify that all access attempts to the object storage bucket are logged."
+                },
+                {
+                  "uuid": "CCC.OS.C5.TR02",
+                  "prose": "Ensure that all changes to the object storage bucket configurations are logged."
+                },
+                {
+                  "uuid": "CCC.OS.C5.TR03",
+                  "prose": "Confirm that logs are protected against unauthorized access and tampering."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

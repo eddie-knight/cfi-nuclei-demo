@@ -1,0 +1,9 @@
+code: true
+templates:
+  - nuclei/GCP_CCC_OS_C1.yaml
+  - nuclei/GCP_CCC_OS_C2.yaml
+  - nuclei/GCP_CCC_OS_C3.yaml
+  - nuclei/GCP_CCC_OS_C4.yaml
+  - nuclei/GCP_CCC_OS_C5.yaml
+var:
+  - region=us-east-1
